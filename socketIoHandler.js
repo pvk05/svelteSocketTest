@@ -3,7 +3,8 @@ import { Server } from 'socket.io';
 export default function injectSocketIO(server) {
     const io = new Server(server, {
         cors: {
-            origin: "https://sveltesockettest.onrender.com/"
+            origin: ["https://sveltesockettest.onrender.com/", "http://localhost:3000"],
+            
         }
     });
 
