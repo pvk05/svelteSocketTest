@@ -1,7 +1,11 @@
 import { Server } from 'socket.io';
 
 export default function injectSocketIO(server) {
-    const io = new Server(server);
+    const io = new Server(server, {
+        cors: {
+            origin: "https://sveltesockettest.onrender.com/"
+        }
+    });
 
     io.on('connection', (socket) => {
         let username = `User ${Math.round(Math.random() * 999999)}`;
