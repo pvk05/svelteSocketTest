@@ -1,6 +1,8 @@
 <script lang="ts">
-    import { io } from '$lib/webSocketConnection.js';
+    //import { io } from '$lib/webSocketConnection.js';
     import { onMount } from 'svelte';
+
+    export let socket;
 
     let textfield = '';
     let username = '';
@@ -8,11 +10,8 @@
     let messages = [];
 
     onMount(() => {
-        io.on('message', (message) => {
+        socket.on('message', (message) => {
             messages = [...messages, message];
-        });
-        io.on('name', (name) => {
-            username = name;
         });
     });
 
@@ -21,7 +20,7 @@
         if (!message) return;
 
         textfield = '';
-        io.emit('message', message);
+        socket.emit('message', message);
     }
 </script>
 

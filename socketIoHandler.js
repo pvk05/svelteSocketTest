@@ -3,14 +3,29 @@ import { Server } from 'socket.io';
 export default function injectSocketIO(server) {
     const io = new Server(server, {
         cors: {
-            origin: ["https://sveltesockettest.onrender.com/", "http://localhost:3000"],
-            
+            origin: ["https://sveltesockettest.onrender.com/", `http://localhost:${process.env.PORT || 3000}`]
         }
     });
 
     io.on('connection', (socket) => {
-        let username = `User ${Math.round(Math.random() * 999999)}`;
-        socket.emit('name', username);
+
+        let username = "";
+        socket.on('login', (name) => {
+            username = name;
+            io.emit('message', {
+                from: 'System',
+                message: `${username} has joined the chat`,
+                time: new Date().toLocaleString()
+            });
+        });
+        socket.on("nameChange", (name) => {
+            io.emit('message', {
+                from: 'System',
+                message: `${username} has changed their name to ${name}`,
+                time: new Date().toLocaleString()
+            });
+            username = name;
+        });
 
         socket.on('message', (message) => {
             io.emit('message', {
