@@ -1,12 +1,20 @@
 <script>
-    import { io } from "socket.io-client";
+    import  io  from "socket.io-client";
     import Chat from "./socket.svelte";
+    import { writable } from "svelte/store";
 
-    let socket;
+    let socket = io({ autoConnect: false });
     let username = "";
+    let socketStatus = writable(false);
 
     function connect() {
-        socket = io();
+        console.log("connecting");
+        socket.connect();
+        socket.on("connect", () => {
+            console.log("connected");
+            socketStatus.set(true);
+        });
+        console.log($socketStatus)
         socket.emit("login", username);
     }
 
@@ -16,7 +24,7 @@
 
 <form >
     <input type="text" placeholder="Enter your name" bind:value={username}/>
-    {#if !socket}
+    {#if !$socketStatus}
         <button on:click={connect}>Connect</button>
     {:else}
         <button on:click={() => socket.emit("nameChange", username)}>Change Name</button>
@@ -24,6 +32,6 @@
     
 </form>
 
-{#if socket}
+{#if $socketStatus}
     <Chat socket={socket}/>
 {/if}
