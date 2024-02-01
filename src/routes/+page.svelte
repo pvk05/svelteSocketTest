@@ -8,13 +8,10 @@
     let socketStatus = writable(false);
 
     function connect() {
-        console.log("connecting");
         socket.connect();
         socket.on("connect", () => {
-            console.log("connected");
             socketStatus.set(true);
         });
-        console.log($socketStatus)
         socket.emit("login", username);
     }
 
