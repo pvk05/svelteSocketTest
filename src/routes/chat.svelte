@@ -1,25 +1,6 @@
 <script lang="ts">
-    import { socket } from "$lib/webSocketConnection.js";
-    import { onMount } from 'svelte';
-
-    let textfield = '';
-    let username = '';
-
-    let messages = [];
-
-    onMount(() => {
-        socket.on('message', (message) => {
-            messages = [...messages, message];
-        });
-    });
-
-    function sendMessage() {
-        const message = textfield.trim();
-        if (!message) return;
-
-        textfield = '';
-        socket.emit('message', message);
-    }
+    import { messages, sendMessage } from "./chat.js";
+    let textfield = "";
 </script>
 
 <div class="h-screen w-screen bg-zinc-800">
@@ -28,11 +9,10 @@
             class="px-6 py-4 border-b border-zinc-800 bg-zinc-700 text-white shrink-0 flex items-center justify-between"
         >
             <span class="font-bold text-xl">My Chat app</span>
-            <span>{username}</span>
         </header>
 
         <div class="h-full w-full p-4">
-            {#each messages as message}
+            {#each $messages as message}
                 <div class="bg-zinc-300 rounded-xl rounded-tl-none px-4 py-3 my-4 w-fit">
                     <span class="flex items-center space-between gap-4">
                         <b>{message.from}</b>
@@ -45,7 +25,7 @@
 
         <form
             action="#"
-            on:submit|preventDefault={sendMessage}
+            on:submit|preventDefault={() => sendMessage(textfield)}
             class="px-6 py-4 border-t border-zinc-800 bg-zinc-700 text-white shrink-0 flex items-center"
         >
             <input
