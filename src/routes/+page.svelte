@@ -1,34 +1,28 @@
 <script>
-    import  io  from "socket.io-client";
-    import Chat from "./socket.svelte";
-    import { writable } from "svelte/store";
-
-    let socket = io({ autoConnect: false });
-    let username = "";
-    let socketStatus = writable(false);
-
-    function connect() {
-        socket.connect();
-        socket.on("connect", () => {
-            socketStatus.set(true);
-        });
-        socket.emit("login", username);
-    }
+    import { socket, connect, socketStatus } from '$lib/webSocketConnection.js';
+    import { username } from './socket.js';
+    import Chat from './chat.svelte';
+    import Users from './users.svelte';
+    
+    let user = username
 
 </script>
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 
 <form >
-    <input type="text" placeholder="Enter your name" bind:value={username}/>
+    <input type="text" placeholder="Enter your name" bind:value={user}/>
     {#if !$socketStatus}
-        <button on:click={connect}>Connect</button>
+        <button on:click={() => connect(user)}>Connect</button>
     {:else}
         <button on:click={() => socket.emit("nameChange", username)}>Change Name</button>
     {/if}
-    
 </form>
 
 {#if $socketStatus}
-    <Chat socket={socket}/>
+    <Users />
+{/if}
+
+{#if $socketStatus}
+    <Chat />
 {/if}

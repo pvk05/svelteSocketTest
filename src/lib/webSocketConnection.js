@@ -1,6 +1,16 @@
-import ioClient from 'socket.io-client';
-const ENDPOINT = `http://localhost:${process.env.PORT || 3000}`;
+import io from 'socket.io-client';
+import { writable } from 'svelte/store';
+const ENDPOINT = `http://localhost:3000`;
 
-const socket = ioClient(ENDPOINT);
+export const socket = io(ENDPOINT, { autoConnect: false });
+export let socketStatus = writable(false);
 
-export const io = socket;
+export function connect(username) {
+    //usernameAlreadySelected = true;
+    socket.auth = { username };
+    socket.connect();
+    socket.on("connect", () => {
+        console.log("Connected to server");
+        socketStatus.set(true);
+    });
+}

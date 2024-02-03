@@ -7,9 +7,35 @@ export default function injectSocketIO(server) {
         }
     });
 
-    io.on('connection', (socket) => {
+    io.use((socket, next) => {
+        const username = socket.handshake.auth.username;
+        if (!username) {
+            return next(new Error("Invalid username"));
+        }
+        socket.username = username;
+        next();
+    })
 
-        let username = "";
+    io.on('connect', (socket) => {
+        console.log('User connected', socket.id, socket.username);
+        socket.emit("hello", "world");
+        socket.send("Hello, world!");
+        
+        const users = [];
+        for (let [id, socket] of io.of("/").sockets) {
+            users.push({
+                userID: id,
+                username: socket.username
+            });
+        }
+        socket.emit("users", users);
+
+        socket.broadcast.emit('user connected', {
+            userID: socket.id,
+            username: socket.username
+        });
+
+        /*let username = "";
         socket.on('login', (name) => {
             username = name;
             io.emit('message', {
@@ -17,19 +43,19 @@ export default function injectSocketIO(server) {
                 message: `${username} has joined the chat`,
                 time: new Date().toLocaleString()
             });
-        });
-        socket.on("nameChange", (name) => {
+        });*/
+        /*socket.on("nameChange", (name) => {
             io.emit('message', {
                 from: 'System',
-                message: `${username} has changed their name to ${name}`,
+                message: ` has changed their name to ${name}`,
                 time: new Date().toLocaleString()
             });
             username = name;
-        });
+        });*/
 
         socket.on('message', (message) => {
             io.emit('message', {
-                from: username,
+                from: socket.username,
                 message: message,
                 time: new Date().toLocaleString()
             });

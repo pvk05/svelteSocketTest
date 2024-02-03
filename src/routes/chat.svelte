@@ -1,8 +1,6 @@
 <script lang="ts">
-    //import { io } from '$lib/webSocketConnection.js';
+    import { socket } from "$lib/webSocketConnection.js";
     import { onMount } from 'svelte';
-
-    export let socket;
 
     let textfield = '';
     let username = '';
