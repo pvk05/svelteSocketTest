@@ -1,16 +1,17 @@
 import { socket } from "$lib/webSocketConnection.js";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
+import { reciever } from "./socket.js";
 
 export let userList = writable();
 
-socket.on("user connected", (user) => {
-    userList.update((users) => [...users, user]);
+socket.on("user connected", (data) => {
+    userList.update((users) => [...users, data.user]);
 });
 
 socket.on("users", (users) => {
     //console.log(users)
     users.forEach((user) => {
-        user.self = user.userID === socket.userID;
+        user.self = user.userID === socket.id;
     });
 
     users = users.sort((a, b) => {
@@ -21,3 +22,12 @@ socket.on("users", (users) => {
     });
     userList.set(users);
 });
+
+export function changeUser(userID) {
+    let user = get(userList).find((user) => user.userID === userID);
+    if(user.self) {
+        reciever.set("all");
+        return;
+    }
+    reciever.set(get(userList).find((user) => user.userID === userID));
+}

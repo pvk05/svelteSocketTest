@@ -1,6 +1,8 @@
 <script lang="ts">
     import { messages, sendMessage } from "./chat.js";
     let textfield = "";
+
+    export let reciever;
 </script>
 
 <div class="h-screen w-screen bg-zinc-800">
@@ -8,7 +10,7 @@
         <header
             class="px-6 py-4 border-b border-zinc-800 bg-zinc-700 text-white shrink-0 flex items-center justify-between"
         >
-            <span class="font-bold text-xl">My Chat app</span>
+            <span class="font-bold text-xl">Chatting with {$reciever.username}</span>
         </header>
 
         <div class="h-full w-full p-4">

@@ -18,9 +18,7 @@ export default function injectSocketIO(server) {
 
     io.on('connect', (socket) => {
         console.log('User connected', socket.id, socket.username);
-        socket.emit("hello", "world");
-        socket.send("Hello, world!");
-        
+
         const users = [];
         for (let [id, socket] of io.of("/").sockets) {
             users.push({
@@ -31,8 +29,15 @@ export default function injectSocketIO(server) {
         socket.emit("users", users);
 
         socket.broadcast.emit('user connected', {
-            userID: socket.id,
-            username: socket.username
+            user: {
+                userID: socket.id,
+                username: socket.username
+            },
+            message: {
+                from: "System",
+                message: `${socket.username} has joined the chat`,
+                time: new Date().toLocaleString()
+            }
         });
 
         /*let username = "";
@@ -57,6 +62,23 @@ export default function injectSocketIO(server) {
             io.emit('message', {
                 from: socket.username,
                 message: message,
+                time: new Date().toLocaleString()
+            });
+        });
+
+        socket.on('private message', ({ to, message }) => {
+            socket.to(to).emit('private message', {
+                from: socket.username,
+                message: message,
+                time: new Date().toLocaleString()
+            });
+        });
+
+        socket.on('disconnect', () => {
+            console.log('User disconnected', socket.id, socket.username);
+            io.emit('user disconnected', {
+                from: "System",
+                message: `${socket.username} has left the chat`,
                 time: new Date().toLocaleString()
             });
         });

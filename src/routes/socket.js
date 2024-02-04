@@ -1,10 +1,10 @@
 import { socket, socketStatus } from "$lib/webSocketConnection.js";
+import { writable } from "svelte/store";
 
 export let username = "";
 //let usernameAlreadySelected = false;
 export let userList = [];
-
-
+export let reciever = writable("all");
 
 /*const sessionID = localStorage.getItem("sessionID");
 if (sessionID) {
@@ -31,15 +31,3 @@ socket.on("connect_error", (err) => {
         socketStatus.set(false);
     }
 });
-
-
-
-
-export function connect() {
-    //usernameAlreadySelected = true;
-    socket.auth = { username };
-    socket.connect();
-    socket.on("connect", () => {
-        socketStatus.set(true);
-    });
-}
